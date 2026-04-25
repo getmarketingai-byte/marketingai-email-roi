@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email ROI Calculator | MarketingAI</title>
+    <meta name="description" content="Calculate the return on investment from your email marketing campaigns. See how much revenue your email list generates.">
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2Q8MGZ47BC"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-2Q8MGZ47BC');
+    </script>
+
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7076137753154472"
+        crossorigin="anonymous"></script>
+
+    <!-- Vercel Analytics -->
+    <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+    <script defer src="/_vercel/insights/script.js"></script>
+
+    <!-- Vercel Speed Insights -->
+    <script>window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };</script>
+    <script defer src="/_vercel/speed-insights/script.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #fff;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.1rem;
+        }
+
+        .calculator {
+            background: #fff;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #444;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e1e1e1;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        .input-suffix {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .input-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+
+        .results {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #eee;
+            display: none;
+        }
+
+        .results.visible {
+            display: block;
+        }
+
+        .results h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .result-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        @media (max-width: 500px) {
+            .result-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .result-card.highlight {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+
+        .result-card .label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .result-card .value {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .result-card .sub {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        .cta-section {
+            margin-top: 30px;
+            text-align: center;
+            padding: 25px;
+            background: #f8f9ff;
+            border-radius: 12px;
+        }
+
+        .cta-section h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .cta-section p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .cta-btn {
+            display: inline-block;
+            padding: 16px 40px;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(17, 153, 142, 0.4);
+        }
+
+        .disclaimer {
+            margin-top: 30px;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: rgba(255,255,255,0.8);
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .nav-links {
+            margin-top: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.25);
+        }
+
+        .ad-container {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .ad-slot {
+            background: #f5f5f5;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Email ROI Calculator</h1>
+            <p class="subtitle">Calculate the return on investment from your email campaigns</p>
+        </header>
+
+        <div class="calculator">
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="listSize">Email List Size</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="listSize" placeholder="1000" min="1">
+                        <span class="input-suffix">subscribers</span>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="openRate">Open Rate</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="openRate" placeholder="20" min="0" max="100" step="0.1">
+                        <span class="input-suffix">%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="clickRate">Click-Through Rate</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="clickRate" placeholder="5" min="0" max="100" step="0.1">
+                        <span class="input-suffix">%</span>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="convValue">Average Conversion Value</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="convValue" placeholder="100" min="0" step="1">
+                        <span class="input-suffix">AUD</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="campaignCost">Campaign Cost</label>
+                <div class="input-wrapper">
+                    <input type="number" id="campaignCost" placeholder="500" min="0" step="1">
+                    <span class="input-suffix">AUD</span>
+                </div>
+            </div>
+
+            <button class="calculate-btn" onclick="calculateROI()">Calculate ROI</button>
+
+            <div class="results" id="results">
+                <h2>Your Email Marketing ROI</h2>
+                <div class="result-cards">
+                    <div class="result-card">
+                        <div class="label">Estimated Conversions</div>
+                        <div class="value" id="conversions">0</div>
+                        <div class="sub">based on your click rate</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="label">Revenue Generated</div>
+                        <div class="value" id="revenue">$0</div>
+                        <div class="sub" id="revenuePerLead">$0 per subscriber</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="label">Campaign Cost</div>
+                        <div class="value" id="cost">$0</div>
+                        <div class="sub">your investment</div>
+                    </div>
+                    <div class="result-card highlight">
+                        <div class="label">Return on Investment</div>
+                        <div class="value" id="roi">0%</div>
+                        <div class="sub" id="roiStatus">neutral</div>
+                    </div>
+                </div>
+
+                <div class="cta-section">
+                    <h3>Want a marketing system that converts?</h3>
+                    <p>MarketingAI builds you a complete email, LinkedIn, and content system — configured to your business in under a week.</p>
+                    <a href="https://buy.stripe.com/cNi8wR0wZd8lePh01cbsc00" class="cta-btn">Get Your Marketing System — $149</a>
+                </div>
+
+                <div class="ad-container">
+                    <ins class="adsbygoogle"
+                        style="display:block"
+                        data-ad-client="ca-pub-7076137753154472"
+                        data-ad-slot="email-roi-calculator"
+                        data-ad-format="auto"
+                        data-full-width-responsive="true"></ins>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-links">
+            <a href="https://email-open-rate.vercel.app/">Email Open Rate Calculator</a>
+            <a href="https://roi-calculator-swart-one.vercel.app/">Marketing ROI Calculator</a>
+            <a href="https://marketing-ai-psi-nine.vercel.app/">All Tools</a>
+        </div>
+
+        <div class="disclaimer">
+            Outcomes vary by business, market, offer quality, and execution consistency. MarketingAI configures and delivers marketing systems — results are not guaranteed.
+        </div>
+    </div>
+
+    <script>
+        function calculateROI() {
+            const listSize = parseFloat(document.getElementById('listSize').value) || 0;
+            const openRate = parseFloat(document.getElementById('openRate').value) || 0;
+            const clickRate = parseFloat(document.getElementById('clickRate').value) || 0;
+            const convValue = parseFloat(document.getElementById('convValue').value) || 0;
+            const campaignCost = parseFloat(document.getElementById('campaignCost').value) || 0;
+
+            if (listSize <= 0 || openRate <= 0 || clickRate <= 0) {
+                alert('Please enter valid values for list size, open rate, and click rate.');
+                return;
+            }
+
+            const clicked = listSize * (openRate / 100) * (clickRate / 100);
+            const conversions = Math.round(clicked * 0.1);
+            const revenue = conversions * convValue;
+            const roi = campaignCost > 0 ? ((revenue - campaignCost) / campaignCost) * 100 : (revenue > 0 ? 999 : 0);
+
+            document.getElementById('conversions').textContent = conversions.toLocaleString();
+            document.getElementById('revenue').textContent = '$' + revenue.toLocaleString('en-AU', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            document.getElementById('revenuePerLead').textContent = '$' + (revenue / listSize).toFixed(2) + ' per subscriber';
+            document.getElementById('cost').textContent = '$' + campaignCost.toLocaleString('en-AU', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            document.getElementById('roi').textContent = (roi >= 999 ? '999+' : Math.round(roi)) + '%';
+
+            let roiStatus = 'neutral';
+            if (roi > 100) roiStatus = 'profitable';
+            else if (roi > 0) roiStatus = 'positive';
+            else if (roi < 0) roiStatus = 'loss';
+            document.getElementById('roiStatus').textContent = roiStatus;
+
+            document.getElementById('results').classList.add('visible');
+
+            if (typeof googletag !== 'undefined') {
+                googletag.display('results');
+            }
+        }
+
+        (function() {
+            'use strict';
+            var script = document.createElement('script');
+            script.async = true;
+            script.src = 'https://www.googletagmanager.com/gtag/js?id=G-2Q8MGZ47BC';
+            document.head.appendChild(script);
+        })();
+    </script>
+</body>
+</html>
