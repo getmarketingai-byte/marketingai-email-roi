@@ -321,7 +321,7 @@
 
             <div class="input-row">
                 <div class="input-group">
-                    <label for="clickRate">Click-Through Rate</label>
+                    <label for="clickRate">Click Rate</label>
                     <div class="input-wrapper">
                         <input type="number" id="clickRate" placeholder="5" min="0" max="100" step="0.1">
                         <span class="input-suffix">%</span>
@@ -329,19 +329,29 @@
                 </div>
 
                 <div class="input-group">
-                    <label for="convValue">Average Conversion Value</label>
+                    <label for="convRate">Conversion Rate</label>
                     <div class="input-wrapper">
-                        <input type="number" id="convValue" placeholder="100" min="0" step="1">
-                        <span class="input-suffix">AUD</span>
+                        <input type="number" id="convRate" placeholder="10" min="0" max="100" step="0.1">
+                        <span class="input-suffix">%</span>
                     </div>
                 </div>
             </div>
 
-            <div class="input-group">
-                <label for="campaignCost">Campaign Cost</label>
-                <div class="input-wrapper">
-                    <input type="number" id="campaignCost" placeholder="500" min="0" step="1">
-                    <span class="input-suffix">AUD</span>
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="dealValue">Deal Value</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="dealValue" placeholder="100" min="0" step="1">
+                        <span class="input-suffix">USD</span>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="costPerEmail">Cost Per Email</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="costPerEmail" placeholder="0.01" min="0" step="0.001">
+                        <span class="input-suffix">USD</span>
+                    </div>
                 </div>
             </div>
 
@@ -351,19 +361,29 @@
                 <h2>Your Email Marketing ROI</h2>
                 <div class="result-cards">
                     <div class="result-card">
-                        <div class="label">Estimated Conversions</div>
-                        <div class="value" id="conversions">0</div>
-                        <div class="sub">based on your click rate</div>
+                        <div class="label">Projected Opens</div>
+                        <div class="value" id="opens">0</div>
+                        <div class="sub">based on open rate</div>
                     </div>
                     <div class="result-card">
-                        <div class="label">Revenue Generated</div>
+                        <div class="label">Projected Clicks</div>
+                        <div class="value" id="clicks">0</div>
+                        <div class="sub">based on click rate</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="label">Projected Conversions</div>
+                        <div class="value" id="conversions">0</div>
+                        <div class="sub">based on conversion rate</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="label">Projected Revenue</div>
                         <div class="value" id="revenue">$0</div>
                         <div class="sub" id="revenuePerLead">$0 per subscriber</div>
                     </div>
                     <div class="result-card">
-                        <div class="label">Campaign Cost</div>
+                        <div class="label">Email Campaign Cost</div>
                         <div class="value" id="cost">$0</div>
-                        <div class="sub">your investment</div>
+                        <div class="sub">based on cost per email</div>
                     </div>
                     <div class="result-card highlight">
                         <div class="label">Return on Investment</div>
@@ -405,23 +425,28 @@
             const listSize = parseFloat(document.getElementById('listSize').value) || 0;
             const openRate = parseFloat(document.getElementById('openRate').value) || 0;
             const clickRate = parseFloat(document.getElementById('clickRate').value) || 0;
-            const convValue = parseFloat(document.getElementById('convValue').value) || 0;
-            const campaignCost = parseFloat(document.getElementById('campaignCost').value) || 0;
+            const convRate = parseFloat(document.getElementById('convRate').value) || 0;
+            const dealValue = parseFloat(document.getElementById('dealValue').value) || 0;
+            const costPerEmail = parseFloat(document.getElementById('costPerEmail').value) || 0;
 
-            if (listSize <= 0 || openRate <= 0 || clickRate <= 0) {
-                alert('Please enter valid values for list size, open rate, and click rate.');
+            if (listSize <= 0 || openRate <= 0 || clickRate <= 0 || convRate <= 0) {
+                alert('Please enter valid values for list size, open rate, click rate, and conversion rate.');
                 return;
             }
 
-            const clicked = listSize * (openRate / 100) * (clickRate / 100);
-            const conversions = Math.round(clicked * 0.1);
-            const revenue = conversions * convValue;
-            const roi = campaignCost > 0 ? ((revenue - campaignCost) / campaignCost) * 100 : (revenue > 0 ? 999 : 0);
+            const opens = Math.round(listSize * (openRate / 100));
+            const clicks = Math.round(opens * (clickRate / 100));
+            const conversions = Math.round(clicks * (convRate / 100));
+            const revenue = conversions * dealValue;
+            const cost = listSize * costPerEmail;
+            const roi = cost > 0 ? ((revenue - cost) / cost) * 100 : (revenue > 0 ? 999 : 0);
 
+            document.getElementById('opens').textContent = opens.toLocaleString();
+            document.getElementById('clicks').textContent = clicks.toLocaleString();
             document.getElementById('conversions').textContent = conversions.toLocaleString();
             document.getElementById('revenue').textContent = '$' + revenue.toLocaleString('en-AU', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
             document.getElementById('revenuePerLead').textContent = '$' + (revenue / listSize).toFixed(2) + ' per subscriber';
-            document.getElementById('cost').textContent = '$' + campaignCost.toLocaleString('en-AU', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            document.getElementById('cost').textContent = '$' + cost.toLocaleString('en-AU', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
             document.getElementById('roi').textContent = (roi >= 999 ? '999+' : Math.round(roi)) + '%';
 
             let roiStatus = 'neutral';
